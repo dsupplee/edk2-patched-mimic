@@ -32,7 +32,7 @@ jobs:
           source_repo: "tianocore/edk2"
           source_branch: "master"
           destination_branch: "tianocore"
-          github_token: ${{ secrets.PAT }}
+          #github_token: ${{ secrets.PAT }}
 
       
       # Merge tianocore -> dev
@@ -42,7 +42,7 @@ jobs:
           type: now
           from_branch: tianocore
           target_branch: dev
-          github_token: ${{ github.token }}
+          #github_token: ${{ github.token }}
 
 
       # Runs a single command using the runners shell
