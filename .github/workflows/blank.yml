@@ -1,0 +1,61 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      # Pull from tianocore/edk2 into tianocore branch
+      - name: GitHub Repo Sync
+        uses: repo-sync/github-sync@v2.3.0
+        with:
+          source_repo: "tianocore/edk2"
+          source_branch: "master"
+          destination_branch: "tianocore"
+          github_token: ${{ secrets.PAT }}
+
+      
+      # Merge tianocore -> dev
+      - name: Merge branch
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: tianocore
+          target_branch: dev
+          github_token: ${{ github.token }}
+
+
+      # Runs a single command using the runners shell
+      - name: Trigger Jenkins Job
+        uses: appleboy/jenkins-action@0.0.1
+        with:
+          url: "http://dsupplee-linux.qualcomm.com:8080/"
+          user: "DOS"
+          token: 110499653b24c5290d1b15e8229d30f264
+          job: "first-job"
+
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Finished the three steps (hopefully successfully)
